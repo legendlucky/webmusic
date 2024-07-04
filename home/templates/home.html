@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .inputbar{
+            width: 300px;
+            border-radius: 5px;
+            height: 40px;
+        }
+        .btn{
+            width: 90px;
+            background-color: greenyellow;
+            height: 44px;
+        }
+        .btn:hover{
+            cursor: pointer;
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <input class="inputbar" placeholder="Enter the song name" type="text" name="songname">
+        <input type="submit" class="btn" value="play">
+    </form>
+</body>
+</html>

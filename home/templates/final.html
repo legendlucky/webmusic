@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=TooeCxLa1PBN&format=png&color=000000" type="image/x-icon">
+    <title>{{ songname }} by {{ artist }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .music-player {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .cover-art img {
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .controls button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            margin: 0 10px;
+            outline: none;
+        }
+
+        .controls button:focus {
+            outline: none;
+        }
+
+        .progress-container {
+            margin: 10px 0;
+        }
+
+        #progress-bar {
+            width: 100%;
+        }
+
+        .cover-art > h4{
+            margin-bottom: 0px;
+        }
+
+        .cover-art > p {
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="music-player">
+        <div class="cover-art">
+            <img src="{{ imgurl }}" alt="Cover Art" id="cover">
+            <h4>{{ songname }}</h4>
+            <p>{{ artist }}</p>
+        </div>
+        <div class="controls">
+            <button id="prev"><i class="fa fa-backward"></i></button>
+            <button id="play-pause"><i class="fa fa-pause" id="play-icon"></i></button>
+            <button id="next"><i class="fa fa-forward"></i></button>
+        </div>
+        <div class="progress-container">
+            <input type="range" id="progress-bar" value="0" max="100">
+        </div>
+        <audio id="audio" src="{{ songurl }}" autoplay></audio>
+    </div>
+    <script>
+        const audio = document.getElementById('audio');
+        const playPauseBtn = document.getElementById('play-pause');
+        const playIcon = document.getElementById('play-icon');
+        const progressBar = document.getElementById('progress-bar');
+        const nextBtn = document.getElementById('next');
+        const prevBtn = document.getElementById('prev');
+        const cover = document.getElementById('cover');
+
+        // // Sample song list
+        // const songs = ['song1.mp3', 'song2.mp3', 'song3.mp3'];
+        // let currentSongIndex = 0;
+
+        // // Load the initial song
+        // function loadSong(index) {
+        //     audio.src = songs[index];
+        //     cover.src = `cover${index + 1}.jpg`; // Assuming cover1.jpg, cover2.jpg, cover3.jpg are the cover images
+        // }
+
+        // loadSong(currentSongIndex);
+
+        // Play or Pause the music
+        playPauseBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playIcon.classList.remove('fa-play');
+                playIcon.classList.add('fa-pause');
+            } else {
+                audio.pause();
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+            }
+        });
+
+        // Update progress bar
+        audio.addEventListener('timeupdate', () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressBar.value = progress;
+        });
+
+        // Seek functionality
+        progressBar.addEventListener('input', () => {
+            const seekTime = (progressBar.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+        });
+
+        // Next song
+        nextBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex);
+            audio.play();
+            playIcon.classList.remove('fa-play');
+            playIcon.classList.add('fa-pause');
+        });
+
+        // Previous song
+        prevBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(currentSongIndex);
+            audio.play();
+            playIcon.classList.remove('fa-play');
+            playIcon.classList.add('fa-pause');
+        });
+    </script>
+</body>
+</html>

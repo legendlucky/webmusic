@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=TooeCxLa1PBN&format=png&color=000000" type="image/x-icon">
+    <title>music</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #recordButton {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ff4747;
+            border: none;
+            color: white;
+            font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        #recordButton:hover {
+            background-color: #fa4d4d;
+            box-shadow: 0px 0px 15px 5px rgb(255, 116, 116);
+            transform: scale(1.05);
+        }
+        #recordButton:active {
+            background-color: #d93636;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const recordButton = document.getElementById('recordButton');
+            const result = document.getElementById('result');
+
+            let recognition;
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+            } else if ('SpeechRecognition' in window) {
+                recognition = new SpeechRecognition();
+            } else {
+                alert('Your browser does not support speech recognition.');
+            }
+
+            if (recognition) {
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = function() {
+                    recordButton.innerText = 'Recording...';
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    // result.innerText = transcript;
+
+                    // Send the transcript to the server via AJAX
+                    $.ajax({
+                        url: '/save_speech_text/',
+                        method: 'POST',
+                        data: {
+                            'text': transcript,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            window.location.href = '/song/';
+                        },
+                        error: function(error) {
+                            console.log('Error:', error);
+                        }
+                    });
+                };
+
+                recognition.onerror = function(event) {
+                    alert('Error occurred in recognition: ' + event.error);
+                };
+
+                recognition.onend = function() {
+                    recordButton.innerText = '';
+                };
+
+                recordButton.addEventListener('mousedown', function() {
+                    recognition.start();
+                });
+
+                recordButton.addEventListener('mouseup', function() {
+                    recognition.stop();
+                });
+
+                recordButton.addEventListener('touchstart', function() {
+                    recognition.start();
+                });
+
+                recordButton.addEventListener('touchend', function() {
+                    recognition.stop();
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <button id="recordButton">
+        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 14C13.1 14 14 13.1 14 12V6C14 4.9 13.1 4 12 4C10.9 4 10 4.9 10 6V12C10 13.1 10.9 14 12 14ZM18 11V12C18 15.31 15.31 18 12 18C8.69 18 6 15.31 6 12V11H4V12C4 16.42 7.58 20 12 20C16.42 20 20 16.42 20 12V11H18ZM11 22H13V24H11V22Z" fill="white"/>
+        </svg>
+    </button>
+    <p id="result"></p>
+</body>
+</html>
